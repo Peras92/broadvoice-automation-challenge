@@ -54,3 +54,36 @@ test('Cenario 3', async ({ page }) => {
     await expect(bookTitle).toHaveText('Do Not Disturb');
 });
 
+
+test('Cenario 4', async ({ page }) => {
+    await searchBook(page, '1984');
+
+    const priceText = await page.locator('#productPageRightSectionTop-saleAction-price-current').innerText();
+    await expect(priceText).toBe('12,50€');
+
+    await page.getByRole('button', { name: 'Comprar' }).click();
+
+    await page.getByRole('button', { name: 'Cesto de compras' }).click();
+
+    const priceCartText = await page.locator('div.col-xs-12.total span.value').innerText();
+
+
+    const price = parseFloat(priceText.replace('€', '').replace(',', '.').trim());
+    const priceCart = parseFloat(priceCartText.replace('€', '').replace(',', '.').trim());
+
+    expect(priceCart).toBe(price);
+
+});
+
+
+test('Cenario 5', async ({ page }) => {
+    await page.locator('[aria-controls="menu-lateral"]:visible').click();
+
+    await page.getByRole('tab', { name: 'As nossas livrarias' }).click();
+    await page.locator('a').filter({ hasText: 'Rede de livrarias' }).first().click()
+
+    await page.getByRole('textbox', { name: 'Localidade' }).click();
+    await page.locator('label[for="search-districts-search-districts-11"]').click();
+    await expect(page.locator('span:has-text("LIVRARIA BERTRAND - ALEGRO SINTRA")')).toBeVisible();
+
+});
